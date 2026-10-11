@@ -1,0 +1,15 @@
+(() => {
+  const $=(s,c=document)=>c.querySelector(s), $$=(s,c=document)=>[...c.querySelectorAll(s)];
+  $$('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());
+  const toggle=$('.menu-toggle'), nav=$('.main-nav');
+  toggle?.addEventListener('click',()=>{const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close menu':'Open menu')});
+  $$('.nav-group>button').forEach(btn=>btn.addEventListener('click',()=>{if(innerWidth<=900){const group=btn.closest('.nav-group');const open=group.classList.toggle('open');btn.setAttribute('aria-expanded',String(open))}}));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){nav?.classList.remove('open');$('.wa-panel')?.classList.remove('open')}});
+  const observer='IntersectionObserver'in window?new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.12}):null;
+  $$('.reveal').forEach(el=>observer?observer.observe(el):el.classList.add('visible'));
+  const top=$('.back-top');addEventListener('scroll',()=>top?.classList.toggle('show',scrollY>550),{passive:true});top?.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+  const slides=$$('.testimonial');let index=0;const show=n=>{if(!slides.length)return;slides[index].classList.remove('active');index=(n+slides.length)%slides.length;slides[index].classList.add('active')};$('.next')?.addEventListener('click',()=>show(index+1));$('.previous')?.addEventListener('click',()=>show(index-1));
+  const wa=$('.wa-panel');$('.wa-button')?.addEventListener('click',()=>wa?.classList.toggle('open'));$('.wa-close')?.addEventListener('click',()=>wa?.classList.remove('open'));setTimeout(()=>{if(!sessionStorage.getItem('lehumo-wa-seen')){wa?.classList.add('open');sessionStorage.setItem('lehumo-wa-seen','1')}},5500);
+  const cookie=$('.cookie');if(localStorage.getItem('lehumo-cookie-choice'))cookie?.classList.add('hidden');$('[data-cookie]')?.addEventListener('click',()=>{localStorage.setItem('lehumo-cookie-choice','accepted');cookie.classList.add('hidden')});
+  $$('.lead-form').forEach(form=>form.addEventListener('submit',e=>{e.preventDefault();const status=$('.form-status',form);if(!form.checkValidity()){form.reportValidity();status.textContent='Please complete all required fields.';return}const data=new FormData(form);const name=`${data.get('firstName')} ${data.get('lastName')}`.trim();const subject=`${form.dataset.formType||'Website enquiry'} — ${data.get('need')}`;const body=[`Name: ${name}`,`Phone: ${data.get('phone')}`,`Email: ${data.get('email')}`,`Service: ${data.get('need')}`,`Message: ${data.get('message')||'No additional message'}`].join('\n');status.textContent='Your email application will open with the completed enquiry.';window.location.href=`mailto:info@lehumo.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}));
+})();
